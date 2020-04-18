@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.779
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCADAutoRunner", "SCADAutoRunner\SCADAutoRunner.csproj", "{F84655D9-2880-4B99-AE47-73E5D05F8285}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F84655D9-2880-4B99-AE47-73E5D05F8285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F84655D9-2880-4B99-AE47-73E5D05F8285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F84655D9-2880-4B99-AE47-73E5D05F8285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F84655D9-2880-4B99-AE47-73E5D05F8285}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {40EC9768-2012-4579-9C27-685F32560ACF}
+	EndGlobalSection
+EndGlobal
