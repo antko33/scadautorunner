@@ -73,6 +73,7 @@ namespace ConsoleApp1
             int y = 460;
             IntPtr hWnd = WindowFromPoint(new System.Drawing.Point(x, y));
             int w = y << 16 | x;
+            // Does not work always. Check child  window for IntPtr.Zero somehow please!!!!
             var z = PostMessage(hWnd, Win32.WM_LBUTTONDOWN, (IntPtr)0x1, (IntPtr)w);
             var v = PostMessage(hWnd, Win32.WM_LBUTTONUP, (IntPtr)0x1, (IntPtr)w);
 
