@@ -15,35 +15,15 @@ namespace ConsoleApp1
     class Program
     {
         [DllImport("user32.dll")]
-        private static extern IntPtr GetForegroundWindow();
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
-
-        [DllImport("user32.dll")]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("User32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int uMsg, int wParam, string lParam);
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct RECT
-        {
-            public int Left;        // x position of upper-left corner
-            public int Top;         // y position of upper-left corner
-            public int Right;       // x position of lower-right corner
-            public int Bottom;      // y position of lower-right corner
-        }
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindow(string className, string windowTitle);
 
         [DllImport("user32.dll")]
         public static extern IntPtr WindowFromPoint(System.Drawing.Point p);
@@ -68,16 +48,22 @@ namespace ConsoleApp1
             {
                 return;
             }
-
+            
             int x = 130;
-            int y = 460;
+            int y = 420;
             IntPtr hWnd = WindowFromPoint(new System.Drawing.Point(x, y));
             int w = y << 16 | x;
-            // Does not work always. Check child  window for IntPtr.Zero somehow please!!!!
-            var z = PostMessage(hWnd, Win32.WM_LBUTTONDOWN, (IntPtr)0x1, (IntPtr)w);
-            var v = PostMessage(hWnd, Win32.WM_LBUTTONUP, (IntPtr)0x1, (IntPtr)w);
-
             
+            IntPtr hParams = IntPtr.Zero;
+            while (hParams == IntPtr.Zero)
+            {
+                PostMessage(hWnd, Win32.WM_LBUTTONDOWN, (IntPtr)0x1, (IntPtr)w);
+                PostMessage(hWnd, Win32.WM_LBUTTONUP, (IntPtr)0x1, (IntPtr)w);
+                hParams = FindWindow("#32770", "Параметры расчета");
+                Thread.Sleep(500);
+            }
+            SetForegroundWindow(hParams);
+            PostMessage(hParams, Win32.WM_KEYDOWN, (IntPtr)Win32.VK_RETURN, (IntPtr)0x0);
         }
     }
 
@@ -102,5 +88,6 @@ namespace ConsoleApp1
         public const int WM_SETTEXT = 0x000c;
 
         public const int VK_TAB = 0x09;
+        public const int VK_RETURN = 0x0D;
     }
 }
