@@ -1,33 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
-using System.Windows;
-using System.Windows.Input;
 using System.Security;
 using System.Threading;
+using System.Collections.Generic;
+using System.IO;
 
-namespace ConsoleApp1
+namespace SCADAutoRunner
 {
     class Program
     {
-        [DllImport("user32.dll")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr FindWindow(string className, string windowTitle);
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr WindowFromPoint(System.Drawing.Point p);
-
         [STAThread]
         static void Main(string[] args)
         {
@@ -44,50 +27,79 @@ namespace ConsoleApp1
             while (scadProcess.MainWindowHandle == IntPtr.Zero) { }
             Thread.Sleep(2000);
             IntPtr scadMainWindow = scadProcess.MainWindowHandle;
-            if (!SetForegroundWindow(scadMainWindow))
+            if (!User32.SetForegroundWindow(scadMainWindow))
             {
                 return;
             }
-            
+
             int x = 130;
             int y = 420;
-            IntPtr hWnd = WindowFromPoint(new System.Drawing.Point(x, y));
+            IntPtr hWnd = User32.WindowFromPoint(new System.Drawing.Point(x, y));
             int w = y << 16 | x;
-            
+
             IntPtr hParams = IntPtr.Zero;
             while (hParams == IntPtr.Zero)
             {
-                PostMessage(hWnd, Win32.WM_LBUTTONDOWN, (IntPtr)0x1, (IntPtr)w);
-                PostMessage(hWnd, Win32.WM_LBUTTONUP, (IntPtr)0x1, (IntPtr)w);
-                hParams = FindWindow("#32770", "Параметры расчета");
-                Thread.Sleep(500);
+                User32.PostMessage(hWnd, Win32.WM_LBUTTONDOWN, (IntPtr)0x1, (IntPtr)w);
+                User32.PostMessage(hWnd, Win32.WM_LBUTTONUP, (IntPtr)0x1, (IntPtr)w);
+                hParams = User32.FindWindow("#32770", "Параметры расчета");
+                Thread.Sleep(2000);
             }
-            SetForegroundWindow(hParams);
-            PostMessage(hParams, Win32.WM_KEYDOWN, (IntPtr)Win32.VK_RETURN, (IntPtr)0x0);
+            User32.SetForegroundWindow(hParams);
+            User32.PostMessage(hParams, Win32.WM_KEYDOWN, (IntPtr)Win32.VK_RETURN, (IntPtr)0x0);
+
+            Process solverProcess = null;
+            while (solverProcess == null)
+            {
+                var procs = Process.GetProcessesByName("SprSolverExe");
+                if (procs.Any())
+                {
+                    solverProcess = procs.First();
+                }
+                Thread.Sleep(2000);
+            }
+            solverProcess.WaitForExit();
+            Thread.Sleep(2000);
+            scadProcess.Kill();
+
+            scadProcess = Process.Start(scadInfo);
+            while (scadProcess.MainWindowHandle == IntPtr.Zero) { }
+            Thread.Sleep(2000);
+            scadMainWindow = scadProcess.MainWindowHandle;
+            if (!User32.SetForegroundWindow(scadMainWindow))
+            {
+                return;
+            }
+            x = 145;
+            y = 785;
+            hWnd = User32.WindowFromPoint(new System.Drawing.Point(x, y));
+            w = y << 16 | x;
+
+            hParams = IntPtr.Zero;
+            while (hParams == IntPtr.Zero)
+            {
+                User32.PostMessage(hWnd, Win32.WM_LBUTTONDOWN, (IntPtr)0x1, (IntPtr)w);
+                User32.PostMessage(hWnd, Win32.WM_LBUTTONUP, (IntPtr)0x1, (IntPtr)w);
+                hParams = User32.FindWindow("#32770", "Оформление результатов расчета");
+                Thread.Sleep(2000);
+            }
         }
-    }
 
-    // <summary>
-    /// Summary description for Win32.
-    /// </summary>
-    public class Win32
-    {
-        // The WM_COMMAND message is sent when the user selects a command item from 
-        // a menu, when a control sends a notification message to its parent window, 
-        // or when an accelerator keystroke is translated.
-        public const int WM_CLOSE = 0x10;
-        public const int WM_KEYDOWN = 0x100;
-        public const int WM_KEYUP = 0x101;
-        public const int WM_COMMAND = 0x111;
-        public const int WM_LBUTTONDOWN = 0x201;
-        public const int WM_LBUTTONUP = 0x202;
-        public const int WM_LBUTTONDBLCLK = 0x203;
-        public const int WM_RBUTTONDOWN = 0x204;
-        public const int WM_RBUTTONUP = 0x205;
-        public const int WM_RBUTTONDBLCLK = 0x206;
-        public const int WM_SETTEXT = 0x000c;
-
-        public const int VK_TAB = 0x09;
-        public const int VK_RETURN = 0x0D;
+        static List<IntPtr> GetAllChildrenWindowHandles(IntPtr hParent, string className, string windowName, int maxCount = 50)
+        {
+            List<IntPtr> result = new List<IntPtr>();
+            int ct = 0;
+            IntPtr prevChild = IntPtr.Zero;
+            IntPtr currChild = IntPtr.Zero;
+            while (true && ct < maxCount)
+            {
+                currChild = User32.FindWindowEx(hParent, prevChild, className, windowName);
+                if (currChild == IntPtr.Zero) break;
+                result.Add(currChild);
+                prevChild = currChild;
+                ++ct;
+            }
+            return result;
+        }
     }
 }
