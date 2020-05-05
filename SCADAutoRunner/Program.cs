@@ -34,14 +34,35 @@ namespace SCADAutoRunner
 
             int x = 130;
             int y = 420;
-            IntPtr hWnd = User32.WindowFromPoint(new System.Drawing.Point(x, y));
+            IntPtr hTreeView = User32.WindowFromPoint(new System.Drawing.Point(x, y));
+            User32.GetWindowThreadProcessId(hTreeView, out int pid);
+            IntPtr process = User32.OpenProcess(
+                User32.ProcessAccessFlags.VirtualMemoryOperation |
+                User32.ProcessAccessFlags.VirtualMemoryRead |
+                User32.ProcessAccessFlags.VirtualMemoryWrite |
+                User32.ProcessAccessFlags.QueryInformation,
+                false, pid);
+            int tviSize = Marshal.SizeOf(typeof(TVItem));
+            int textSize = 255;
+            bool isUnicode = User32.IsWindowUnicode(hTreeView);
+            if (isUnicode)
+            {
+                textSize *= 2;
+            }
+            IntPtr tviPtr = User32.VirtualAllocEx(process, IntPtr.Zero, tviSize + textSize, User32.AllocationType.Commit, User32.MemoryProtection.ReadWrite);
+
+            IntPtr textPtr = IntPtr.Add(tviPtr, tviSize);
+
+            IntPtr hItems = User32.SendMessage(hTreeView, User32.TVM.TVM_GETCOUNT, IntPtr.Zero, IntPtr.Zero);
+            int citems = hItems.ToInt32();
+
             int w = y << 16 | x;
 
             IntPtr hParams = IntPtr.Zero;
             while (hParams == IntPtr.Zero)
             {
-                User32.PostMessage(hWnd, Win32.WM_LBUTTONDOWN, (IntPtr)0x1, (IntPtr)w);
-                User32.PostMessage(hWnd, Win32.WM_LBUTTONUP, (IntPtr)0x1, (IntPtr)w);
+                User32.PostMessage(hTreeView, Win32.WM_LBUTTONDOWN, (IntPtr)0x1, (IntPtr)w);
+                User32.PostMessage(hTreeView, Win32.WM_LBUTTONUP, (IntPtr)0x1, (IntPtr)w);
                 hParams = User32.FindWindow("#32770", "Параметры расчета");
                 Thread.Sleep(2000);
             }
@@ -72,15 +93,15 @@ namespace SCADAutoRunner
             }
             x = 145;
             y = 785;
-            hWnd = User32.WindowFromPoint(new System.Drawing.Point(x, y));
+            IntPtr hWnd = User32.WindowFromPoint(new System.Drawing.Point(x, y));
             w = y << 16 | x;
 
             hParams = IntPtr.Zero;
             while (hParams == IntPtr.Zero)
             {
-                User32.PostMessage(hWnd, Win32.WM_LBUTTONDOWN, (IntPtr)0x1, (IntPtr)w);
-                User32.PostMessage(hWnd, Win32.WM_LBUTTONUP, (IntPtr)0x1, (IntPtr)w);
-                hParams = User32.FindWindow("#32770", "Оформление результатов расчета");
+                //User32.PostMessage(hWnd, Win32.WM_LBUTTONDOWN, (IntPtr)0x1, (IntPtr)w);
+                //User32.PostMessage(hWnd, Win32.WM_LBUTTONUP, (IntPtr)0x1, (IntPtr)w);
+                hParams = User32.FindWindow("#32770", "Результаты расчета");
                 Thread.Sleep(2000);
             }
         }
