@@ -19,10 +19,12 @@
         public const int WM_RBUTTONUP = 0x205;
         public const int WM_RBUTTONDBLCLK = 0x206;
         public const int WM_SETTEXT = 0x000c;
+        public const int WM_KILLFOCUS = 0x0008;
 
         public const int VK_TAB = 0x09;
         public const int VK_RETURN = 0x0D;
         public const int VK_DOWN = 0x28;
         public const int VK_SPACE = 0x20;
+        public const int VK_1_KEY = 0x31;
     }
 }
