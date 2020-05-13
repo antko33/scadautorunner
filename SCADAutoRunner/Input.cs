@@ -54,5 +54,30 @@ namespace SCADAutoRunner
         {
             Thread.Sleep(Settings.ShortDelayTime);
         }
+
+        /// <summary>
+        /// Список дочерних элементов заданного окна, принадлежащих указанному классу
+        /// </summary>
+        /// <param name="hParent">Handle родительского окно</param>
+        /// <param name="className">Класс</param>
+        /// <param name="windowName">Заголовок</param>
+        /// <param name="maxCount">Максимальное количество искомых элементов</param>
+        /// <returns>Список handle'ов найденных элементов</returns>
+        public static List<IntPtr> GetAllChildrenWindowHandles(IntPtr hParent, string className, string windowName = null, int maxCount = 50)
+        {
+            List<IntPtr> result = new List<IntPtr>();
+            int ct = 0;
+            IntPtr prevChild = IntPtr.Zero;
+            IntPtr currChild = IntPtr.Zero;
+            while (true && ct < maxCount)
+            {
+                currChild = Win32API.FindWindowEx(hParent, prevChild, className, windowName);
+                if (currChild == IntPtr.Zero) break;
+                result.Add(currChild);
+                prevChild = currChild;
+                ++ct;
+            }
+            return result;
+        }
     }
 }

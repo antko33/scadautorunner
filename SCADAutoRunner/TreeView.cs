@@ -19,6 +19,10 @@ namespace SCADAutoRunner
             handle = Win32API.WindowFromPoint(new Point(Settings.DefaultX, Settings.DefaultY));
         }
 
+        /// <summary>
+        /// Получает пункт "Расчёт"->"Линейный" в дереве действий главного окна SCAD
+        /// </summary>
+        /// <returns>Handle пункта "Линеный"</returns>
         public IntPtr GetLinearCalcuationsItem()
         {
             IntPtr treeItem = IntPtr.Zero;
@@ -33,6 +37,10 @@ namespace SCADAutoRunner
             return treeItem;
         }
 
+        /// <summary>
+        /// Получает пункт "Результаты"->"Документирование" в дереве действий главного окна SCAD
+        /// </summary>
+        /// <returns>Handle пункта "Документирование"</returns>
         public IntPtr GetDocResultItem()
         {
             IntPtr treeItem = IntPtr.Zero;
@@ -51,10 +59,15 @@ namespace SCADAutoRunner
             return treeItem;
         }
 
+        /// <summary>
+        /// Возвращает точку, расположенную по центру указанного пункта
+        /// </summary>
+        /// <param name="item">Handle пункта дерева</param>
+        /// <returns>Точка по центру указанного пункта</returns>
         public Point GetItemPoint(IntPtr item)
         {
             RECT rct = new RECT();
-            while (rct.Left > 10000 || rct.Top > 10000 || rct.Left <= 0 || rct.Top <= 0)
+            while (rct.Left > 10000 || rct.Top > 10000 || rct.Left <= 0 || rct.Top <= 0)    // TODO
             {
                 Win32API.GetWindowThreadProcessId(handle, out int pid);
                 IntPtr process = Win32API.OpenProcess(

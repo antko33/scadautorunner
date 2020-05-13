@@ -25,21 +25,9 @@ namespace SCADAutoRunner
         {
             var proc = "\"C:\\SCAD Soft\\SCAD Office\\64\\scadx.exe\"";
             var param = "\"C:\\Users\\User\\Desktop\\4_26 — копия.SPR\"";
-            var scadInfo = new ProcessStartInfo()
-            {
-                FileName = proc,
-                Arguments = param,
-                WindowStyle = ProcessWindowStyle.Maximized
-            };
-            Process scadProcess = Process.Start(scadInfo);
 
-            while (scadProcess.MainWindowHandle == IntPtr.Zero) { }
-            Input.LongDelay();
-            IntPtr scadMainWindow = scadProcess.MainWindowHandle;
-            if (!Win32API.SetForegroundWindow(scadMainWindow))
-            {
-                return;
-            }
+            var scadProject = new SCADProject(param);
+            scadProject.Open();
 
             int x = 130;
             int y = 420;
@@ -69,20 +57,12 @@ namespace SCADAutoRunner
             }
             solverProcess.WaitForExit();
             Input.LongDelay();
-            scadProcess.Kill();
+            scadProject.Close();
 
-            scadProcess = Process.Start(scadInfo);
-            while (scadProcess.MainWindowHandle == IntPtr.Zero) { }
-            Input.LongDelay();
-            scadMainWindow = scadProcess.MainWindowHandle;
-            if (!Win32API.SetForegroundWindow(scadMainWindow))
-            {
-                return;
-            }
+            scadProject.Open();
 
             x = 130;
             y = 420;
-            Win32API.SetForegroundWindow(scadMainWindow);
 
             treeView = new TreeView();
             var docResultItem = treeView.GetDocResultItem();
@@ -98,8 +78,8 @@ namespace SCADAutoRunner
 
             IntPtr hParent = hParams;
             hParams = Win32API.FindWindowEx(hParams, IntPtr.Zero, "#32770", "Вывод результатов");
-            var resSpreads = GetAllChildrenWindowHandles(hParams, "fpSpread80");
-            var resButtons = GetAllChildrenWindowHandles(hParams, "Button");
+            var resSpreads = Input.GetAllChildrenWindowHandles(hParams, "fpSpread80");
+            var resButtons = Input.GetAllChildrenWindowHandles(hParams, "Button");
 
             Win32API.SetForegroundWindow(resSpreads[1]);
             Win32API.PostMessage(resSpreads[1], Win32API.InputConstants.WM_KEYDOWN, (IntPtr)Win32API.InputConstants.VK_DOWN, IntPtr.Zero);
@@ -120,17 +100,17 @@ namespace SCADAutoRunner
                 Input.ShortDelay();
             }
 
-            var okBtn = GetAllChildrenWindowHandles(hChild, "Button").First();
+            var okBtn = Input.GetAllChildrenWindowHandles(hChild, "Button").First();
             Win32API.SetForegroundWindow(okBtn);
             Win32API.PostMessage(hChild, Win32API.InputConstants.WM_KEYDOWN, (IntPtr)Win32API.InputConstants.VK_RETURN, IntPtr.Zero);
 
-            var createXlsBtn = GetAllChildrenWindowHandles(hParent, "Button").Last();
+            var createXlsBtn = Input.GetAllChildrenWindowHandles(hParent, "Button").Last();
             Win32API.SetForegroundWindow(createXlsBtn);
             Win32API.GetWindowRect(createXlsBtn, out btnRect);
             x = (btnRect.Left + btnRect.Right) / 2;
             y = (btnRect.Top + btnRect.Bottom) / 2;
-            Win32API.ShowWindow(scadMainWindow, Win32API.ShowWindowCommands.Minimize);
-            Win32API.ShowWindow(scadMainWindow, Win32API.ShowWindowCommands.Maximize);
+            Win32API.ShowWindow(scadProject.mainWindow, Win32API.ShowWindowCommands.Minimize);
+            Win32API.ShowWindow(scadProject.mainWindow, Win32API.ShowWindowCommands.Maximize);
 
             IntPtr hSave = IntPtr.Zero;
             hwnd = Win32API.WindowFromPoint(new System.Drawing.Point(x, y));
@@ -146,12 +126,12 @@ namespace SCADAutoRunner
 
             Input.ShortDelay();
 
-            var cmbParent = GetAllChildrenWindowHandles(hSave, "ComboBoxEx32").First();
-            var cmbName = GetAllChildrenWindowHandles(cmbParent, "ComboBox").First();
-            var txbName = GetAllChildrenWindowHandles(cmbName, "Edit").First();
+            var cmbParent = Input.GetAllChildrenWindowHandles(hSave, "ComboBoxEx32").First();
+            var cmbName = Input.GetAllChildrenWindowHandles(cmbParent, "ComboBox").First();
+            var txbName = Input.GetAllChildrenWindowHandles(cmbName, "Edit").First();
             Win32API.PostMessage(txbName, Win32API.InputConstants.WM_KEYDOWN, (IntPtr)Win32API.InputConstants.VK_1_KEY, IntPtr.Zero);
 
-            var saveBtn = GetAllChildrenWindowHandles(hSave, "Button")[1];
+            var saveBtn = Input.GetAllChildrenWindowHandles(hSave, "Button")[1];
             Win32API.SetForegroundWindow(saveBtn);
             Win32API.SetFocus(saveBtn);
 
@@ -165,30 +145,14 @@ namespace SCADAutoRunner
             {
                 hExec = Win32API.FindWindow("#32770", "Выполнение ...");
             }
-            scadProcess.Kill();
+            scadProject.Close();
+
             Process[] excelPcs = null;
             while (excelPcs == null || !excelPcs.Any())
             {
                 excelPcs = Process.GetProcessesByName("EXCEL");
             }
             excelPcs.ToList().ForEach(p => p.Kill());
-        }
-
-        static List<IntPtr> GetAllChildrenWindowHandles(IntPtr hParent, string className, string windowName = null, int maxCount = 50)
-        {
-            List<IntPtr> result = new List<IntPtr>();
-            int ct = 0;
-            IntPtr prevChild = IntPtr.Zero;
-            IntPtr currChild = IntPtr.Zero;
-            while (true && ct < maxCount)
-            {
-                currChild = Win32API.FindWindowEx(hParent, prevChild, className, windowName);
-                if (currChild == IntPtr.Zero) break;
-                result.Add(currChild);
-                prevChild = currChild;
-                ++ct;
-            }
-            return result;
         }
     }
 }
