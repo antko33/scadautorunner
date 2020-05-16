@@ -12,8 +12,6 @@ namespace SCADAutoRunner
     {
         private IntPtr handle;
 
-        public static explicit operator IntPtr(TreeView item) => item.handle;
-
         public TreeView()
         {
             handle = Win32API.WindowFromPoint(new Point(Settings.DefaultX, Settings.DefaultY));
