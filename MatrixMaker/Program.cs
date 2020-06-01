@@ -21,6 +21,8 @@ namespace MatrixMaker
 
         static void Main(string[] args)
         {
+            Settings.Initialize();
+
             var files = Directory.EnumerateFiles(dir).OrderBy(name => Convert.ToInt32(Path.GetFileNameWithoutExtension(name)));
             List<List<double>> result = new List<List<double>>();
 
