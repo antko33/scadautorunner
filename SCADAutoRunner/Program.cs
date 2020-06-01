@@ -23,7 +23,8 @@ namespace SCADAutoRunner
         [STAThread]
         static void Main(string[] args)
         {
-            var proc = "\"C:\\SCAD Soft\\SCAD Office\\64\\scadx.exe\"";
+            Settings.Initialize();
+
             var param = "\"C:\\Users\\User\\Desktop\\4_26 — копия.SPR\"";
 
             var scadProject = new SCADProject(param);

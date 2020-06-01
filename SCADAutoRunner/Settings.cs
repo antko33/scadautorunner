@@ -50,5 +50,26 @@ namespace SCADAutoRunner
         /// Максимальная величина координаты, при которой она считается корректной (метод Win32API.GetWindowRect)
         /// </summary>
         public static int MaxCorrectCoord { get; set; }
+
+        /// <summary>
+        /// Считывает настройки из .ini
+        /// </summary>
+        public static void Initialize()
+        {
+            Ini settings = new Ini(SettingsFileName);
+
+            PathToScad = settings.GetValue("scad_path", CalcuationsSection);
+            SourceFolder = settings.GetValue("workdir", SchemeSection);
+            ResultFolder = settings.GetValue("resdir", CalcuationsSection);
+            LongDelayTime = Convert.ToInt32(settings.GetValue("long_delay", CalcuationsSection));
+            ShortDelayTime = Convert.ToInt32(settings.GetValue("short_delay", CalcuationsSection));
+            DefaultX = Convert.ToInt32(settings.GetValue("default_x", CalcuationsSection));
+            DefaultY = Convert.ToInt32(settings.GetValue("defalt_y", CalcuationsSection));
+            MaxCorrectCoord = Convert.ToInt32(settings.GetValue("max_correct_coord", CalcuationsSection));
+        }
+
+        private const string SettingsFileName = "settings.ini";
+        private const string CalcuationsSection = "calculations";
+        private const string SchemeSection = "scheme";
     }
 }
