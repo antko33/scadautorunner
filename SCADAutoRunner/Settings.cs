@@ -52,6 +52,11 @@ namespace SCADAutoRunner
         public static int MaxCorrectCoord { get; set; }
 
         /// <summary>
+        /// Путь к папке SCADWORK
+        /// </summary>
+        public static string ScadWork { get; set; }
+
+        /// <summary>
         /// Считывает настройки из .ini
         /// </summary>
         public static void Initialize()
@@ -64,8 +69,9 @@ namespace SCADAutoRunner
             LongDelayTime = Convert.ToInt32(settings.GetValue("long_delay", CalcuationsSection));
             ShortDelayTime = Convert.ToInt32(settings.GetValue("short_delay", CalcuationsSection));
             DefaultX = Convert.ToInt32(settings.GetValue("default_x", CalcuationsSection));
-            DefaultY = Convert.ToInt32(settings.GetValue("defalt_y", CalcuationsSection));
+            DefaultY = Convert.ToInt32(settings.GetValue("default_y", CalcuationsSection));
             MaxCorrectCoord = Convert.ToInt32(settings.GetValue("max_correct_coord", CalcuationsSection));
+            ScadWork = settings.GetValue("scadwork", CalcuationsSection);
         }
 
         private const string SettingsFileName = "settings.ini";

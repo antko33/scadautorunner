@@ -65,7 +65,10 @@ namespace SCADAutoRunner
         public Point GetItemPoint(IntPtr item)
         {
             RECT rct = new RECT();
-            while (rct.Left > 10000 || rct.Top > 10000 || rct.Left <= 0 || rct.Top <= 0)    // TODO
+            while (rct.Left > Settings.MaxCorrectCoord ||
+                   rct.Top > Settings.MaxCorrectCoord ||
+                   rct.Left <= 0 ||
+                   rct.Top <= 0)
             {
                 Win32API.GetWindowThreadProcessId(handle, out int pid);
                 IntPtr process = Win32API.OpenProcess(
