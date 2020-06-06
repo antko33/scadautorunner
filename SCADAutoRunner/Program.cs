@@ -2,9 +2,6 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
-using System.Security;
-using System.Threading;
-using System.Collections.Generic;
 using System.IO;
 
 namespace SCADAutoRunner
