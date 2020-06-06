@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MatrixMaker
 {
@@ -22,6 +20,11 @@ namespace MatrixMaker
         /// Узлы, перемещения в которых рассматриваются
         /// </summary>
         public static List<int> Nodes { get; set; }
+
+        /// <summary>
+        /// Расстояния от центра провала до опорных узлов
+        /// </summary>
+        public static List<double> Distances { get; set; }
 
         /// <summary>
         /// Номер строки, содержащей перемещения в узле с номером 1
@@ -51,9 +54,15 @@ namespace MatrixMaker
                 .Split(',')
                 .Select(item => Convert.ToInt32(item))
                 .ToList();
+            Nodes.Sort();
+            Distances = settings.GetValue("distances", ResultSection)
+                .Split(',')
+                .Select(item => Convert.ToDouble(item.Replace('.', ',')))
+                .ToList();
+            Distances.Sort();
             FirstRow = Convert.ToInt32(settings.GetValue("first_row", ResultSection));
-            ZColumn = Convert.ToInt32(settings.GetValue("z_value", ResultSection));
-            MetersInCell = float.Parse(settings.GetValue("meters_in_cell", ResultSection));
+            ZColumn = Convert.ToInt32(settings.GetValue("z_column", ResultSection));
+            MetersInCell = float.Parse(settings.GetValue("meters_in_cell", ResultSection).Replace('.', ','));
         }
 
         private const string SettingsFileName = "settings.ini";

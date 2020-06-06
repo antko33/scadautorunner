@@ -3,27 +3,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Office.Interop.Excel;
 
 namespace MatrixMaker
 {
     class Program
     {
-        static string dir = @"C:\Users\User\source\repos\ConsoleApp1\MatrixMaker\RES";
-        static string resFile = @"C:\Users\User\source\repos\ConsoleApp1\MatrixMaker\res.xls";
-
-        static List<int> nodes = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-        const int FIRST_ROW = 9;
-        const int Z_COLUMN = 3;
-        const double METERS_IN_CELL = 0.2;
-
         static void Main(string[] args)
         {
+            List<double> z0 = new List<double>();
+
             Settings.Initialize();
 
-            var files = Directory.EnumerateFiles(dir).OrderBy(name => Convert.ToInt32(Path.GetFileNameWithoutExtension(name)));
+            var files = Directory.EnumerateFiles(Settings.SourceDir).OrderBy(name => Convert.ToInt32(Path.GetFileNameWithoutExtension(name)));
             List<List<double>> result = new List<List<double>>();
 
             files.ToList().ForEach(file =>
@@ -35,14 +27,24 @@ namespace MatrixMaker
                 Worksheet sheet = book.Worksheets[1];
                 Range srcRange = sheet.UsedRange;
 
-                List<double> disps = new List<double>();
-                double size = Convert.ToInt32(Path.GetFileNameWithoutExtension(file)) * METERS_IN_CELL;
-                disps.Add(size * size);
-                for (int i = 0; i < nodes.Count; i++)
+                if (file == files.First())
                 {
-                    disps.Add(srcRange[FIRST_ROW + nodes[i] - 1, Z_COLUMN].Value);
+                    for (int i = 0; i < Settings.Nodes.Count; i++)
+                    {
+                        z0.Add(srcRange[Settings.FirstRow + Settings.Nodes[i] - 1, Settings.ZColumn].Value);
+                    }
                 }
-                result.Add(disps);
+                else
+                {
+                    List<double> disps = new List<double>();
+                    double size = Convert.ToInt32(Path.GetFileNameWithoutExtension(file)) * Settings.MetersInCell;
+                    disps.Add(size * size);
+                    for (int i = 0; i < Settings.Nodes.Count; i++)
+                    {
+                        disps.Add(Math.Abs(srcRange[Settings.FirstRow + Settings.Nodes[i] - 1, Settings.ZColumn].Value - z0[i]));
+                    }
+                    result.Add(disps);
+                }
 
                 Marshal.ReleaseComObject(srcRange);
                 Marshal.ReleaseComObject(sheet);
@@ -54,6 +56,15 @@ namespace MatrixMaker
 
                 Console.WriteLine($@"End reading {file}");
             });
+
+            StreamWriter resFile = new StreamWriter(File.Create(Settings.ResFileName));
+            resFile.Write(";");
+            resFile.WriteLine(string.Join(";", Settings.Distances));
+            foreach (var str in result)
+            {
+                resFile.WriteLine(string.Join(";", str));
+            }
+            resFile.Close();
         }
     }
 }
