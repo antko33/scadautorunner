@@ -1,0 +1,3 @@
+[submodule "counterconsoleapp"]
+	path = counterconsoleapp
+	url = git@github.com:antko33/counterconsoleapp.git
