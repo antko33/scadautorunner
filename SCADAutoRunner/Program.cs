@@ -20,6 +20,9 @@ namespace SCADAutoRunner
 
     class Program
     {
+        private const int RESULT_X = 60;
+        private const int RESULT_Y = 155;
+
         [STAThread]
         static void Main(string[] args)
         {
@@ -90,7 +93,9 @@ namespace SCADAutoRunner
                 {
                     Input.LeftMouseButtonClick(x, y, hParams);
                     Input.KeyboardKeyPressed(Win32API.InputConstants.VK_SPACE, hwnd);
-                    Input.LeftMouseButtonClick(465, 290, hParams); // TODO
+
+                    Win32API.GetWindowRect(hParams, out RECT paramsRect);
+                    Input.LeftMouseButtonClick(paramsRect.Left + RESULT_X, paramsRect.Top + RESULT_Y, hParams);
                     hChild = Win32API.FindWindow("#32770", "Величины перемещений");
                     Input.ShortDelay();
                 }
