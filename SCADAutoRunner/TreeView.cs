@@ -6,6 +6,8 @@ namespace SCADAutoRunner
 {
     class TreeView
     {
+        private const int MaxCorrectCoord = 10000;
+
         private IntPtr handle;
 
         public TreeView()
@@ -61,8 +63,8 @@ namespace SCADAutoRunner
         public Point GetItemPoint(IntPtr item)
         {
             RECT rct = new RECT();
-            while (rct.Left > Settings.MaxCorrectCoord ||
-                   rct.Top > Settings.MaxCorrectCoord ||
+            while (rct.Left > MaxCorrectCoord ||
+                   rct.Top > MaxCorrectCoord ||
                    rct.Left <= 0 ||
                    rct.Top <= 0)
             {

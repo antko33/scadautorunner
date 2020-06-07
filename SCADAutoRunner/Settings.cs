@@ -43,11 +43,6 @@ namespace SCADAutoRunner
         public static int DefaultY { get; set; }
 
         /// <summary>
-        /// Максимальная величина координаты, при которой она считается корректной (метод Win32API.GetWindowRect)
-        /// </summary>
-        public static int MaxCorrectCoord { get; set; }
-
-        /// <summary>
         /// Путь к папке SCADWORK
         /// </summary>
         public static string ScadWork { get; set; }
@@ -66,7 +61,6 @@ namespace SCADAutoRunner
             ShortDelayTime = Convert.ToInt32(settings.GetValue("short_delay", CalcuationsSection));
             DefaultX = Convert.ToInt32(settings.GetValue("default_x", CalcuationsSection));
             DefaultY = Convert.ToInt32(settings.GetValue("default_y", CalcuationsSection));
-            MaxCorrectCoord = Convert.ToInt32(settings.GetValue("max_correct_coord", CalcuationsSection));
             ScadWork = settings.GetValue("scadwork", CalcuationsSection);
         }
 
