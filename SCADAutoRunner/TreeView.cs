@@ -48,7 +48,7 @@ namespace SCADAutoRunner
                 treeItem = Win32API.SendMessage(handle, TreeViewMessages.TVM_GETNEXTITEM, TreeViewMessages.GetNext, treeItem);
                 treeItem = Win32API.SendMessage(handle, TreeViewMessages.TVM_GETNEXTITEM, TreeViewMessages.GetChild, treeItem);
                 treeItem = Win32API.SendMessage(handle, TreeViewMessages.TVM_GETNEXTITEM, TreeViewMessages.GetNext, treeItem);
-                treeItem = Win32API.SendMessage(handle, TreeViewMessages.TVM_GETNEXTITEM, TreeViewMessages.GetChild, treeItem);
+                treeItem = Win32API.SendMessage(handle, TreeViewMessages.TVM_GETNEXTITEM, TreeViewMessages.GetNext, treeItem);
                 Win32API.SendMessage(handle, TreeViewMessages.TVM_SELECTITEM, TreeViewMessages.SelectItem, treeItem);
                 Input.ShortDelay();
             }

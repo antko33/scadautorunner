@@ -61,7 +61,7 @@ namespace SCADAutoRunner
             ShortDelayTime = Convert.ToInt32(settings.GetValue("short_delay", CalcuationsSection));
             DefaultX = Convert.ToInt32(settings.GetValue("default_x", CalcuationsSection));
             DefaultY = Convert.ToInt32(settings.GetValue("default_y", CalcuationsSection));
-            ScadWork = settings.GetValue("scadwork", CalcuationsSection);
+            ScadWork = settings.GetValue("swork", CalcuationsSection);
         }
 
         private const string SettingsFileName = "settings.ini";

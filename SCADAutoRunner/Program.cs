@@ -25,8 +25,11 @@ namespace SCADAutoRunner
         {
             Settings.Initialize();
 
-            Directory.EnumerateFiles(Settings.SourceFolder).ToList().ForEach(fileProject =>
+            var files = Directory.EnumerateFiles(Settings.SourceFolder);
+            files.ToList().ForEach(fileProject =>
             {
+                Console.WriteLine($"Расчёт проекта {fileProject}...");
+
                 var scadProject = new SCADProject(fileProject);
                 scadProject.Open();
 
@@ -128,6 +131,11 @@ namespace SCADAutoRunner
                 var txbName = Input.GetAllChildrenWindowHandles(cmbName, "Edit").First();
                 Win32API.PostMessage(txbName, Win32API.InputConstants.WM_KEYDOWN, (IntPtr)Win32API.InputConstants.VK_1_KEY, IntPtr.Zero);
 
+                if (File.Exists(Path.Combine(Settings.ScadWork, "1.xls")))
+                {
+                    File.Delete(Path.Combine(Settings.ScadWork, "1.xls"));
+                }
+
                 var saveBtn = Input.GetAllChildrenWindowHandles(hSave, "Button")[1];
                 Win32API.SetForegroundWindow(saveBtn);
                 Win32API.SetFocus(saveBtn);
@@ -152,7 +160,8 @@ namespace SCADAutoRunner
                 excelPcs.ToList().ForEach(p => p.Kill());
 
                 File.Copy(Path.Combine(Settings.ScadWork, "1.xls"),
-                    Path.Combine(Settings.ResultFolder, Path.GetFileName(fileProject)));
+                    Path.Combine(Settings.ResultFolder,
+                    Path.GetFileNameWithoutExtension(fileProject).Split('_').Last() + ".xls"));
             });
         }
     }
