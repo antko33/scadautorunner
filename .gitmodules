@@ -1,3 +1,6 @@
 [submodule "counterconsoleapp"]
 	path = counterconsoleapp
 	url = git@github.com:antko33/counterconsoleapp.git
+[submodule "schememaker"]
+	path = schememaker
+	url = git@github.com:antko33/schememaker.git
