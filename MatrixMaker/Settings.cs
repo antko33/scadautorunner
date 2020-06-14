@@ -42,11 +42,18 @@ namespace MatrixMaker
         public static float MetersInCell { get; set; }
 
         /// <summary>
+        /// Десятичный разделитель
+        /// </summary>
+        public static string Delimeter { get; set; }
+
+        /// <summary>
         /// Считывает настройки из .ini
         /// </summary>
         public static void Initialize()
         {
             Ini settings = new Ini(SettingsFileName);
+
+            Delimeter = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
 
             SourceDir = settings.GetValue("resdir", CalculationsSection);
             ResFileName = settings.GetValue("filename", ResultSection);
@@ -57,12 +64,13 @@ namespace MatrixMaker
             Nodes.Sort();
             Distances = settings.GetValue("distances", ResultSection)
                 .Split(',')
-                .Select(item => Convert.ToDouble(item.Replace('.', ',')))
+                .Select(item => Convert.ToDouble(item.Replace(".", Delimeter).Replace(",", Delimeter)))
                 .ToList();
             Distances.Sort();
             FirstRow = Convert.ToInt32(settings.GetValue("first_row", ResultSection));
             ZColumn = Convert.ToInt32(settings.GetValue("z_column", ResultSection));
-            MetersInCell = float.Parse(settings.GetValue("meters_in_cell", ResultSection).Replace('.', ','));
+            MetersInCell = float.Parse(settings.GetValue("meters_in_cell", ResultSection)
+                .Replace(".", Delimeter).Replace(",", Delimeter));
         }
 
         private const string SettingsFileName = "settings.ini";
