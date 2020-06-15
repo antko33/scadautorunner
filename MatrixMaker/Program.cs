@@ -59,11 +59,29 @@ namespace MatrixMaker
             });
 
             StreamWriter resFile = new StreamWriter(File.Create(Settings.ResFileName));
-            resFile.Write(";");
-            resFile.WriteLine(string.Join(";", Settings.Distances));
-            foreach (var str in result)
+            result = result.Select(item => item.Select(num => Math.Round(num, 3)).ToList()).ToList();
+
+            var l = result.Last().Count;
+            var tResult = new List<List<double>>(l);
+            for (int i = 0; i < l; i++)
             {
-                resFile.WriteLine(string.Join(";", str.Select(item => Math.Round(item, 3))));
+                tResult.Add(new List<double>(result.Count));
+            }
+            for (int j = 0; j < result.Count; j++)
+            {
+                for (int i = 0; i < l; i++)
+                {
+                    tResult[i].Add(result[j].Count > i ? result[j][i] : 0);
+                }
+            }
+            for (int i = 0; i < tResult.Count; i++)
+            {
+                if (i != 0)
+                {
+                    resFile.Write(Settings.Distances[i - 1]);
+                }
+                resFile.Write(";");
+                resFile.WriteLine(string.Join(";", tResult[i]));
             }
             resFile.Close();
         }
