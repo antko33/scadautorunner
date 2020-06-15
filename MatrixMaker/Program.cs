@@ -31,14 +31,15 @@ namespace MatrixMaker
                 {
                     for (int i = 0; i < Settings.Nodes.Count; i++)
                     {
-                        z0.Add(srcRange[Settings.FirstRow + Settings.Nodes[i] - 1, Settings.ZColumn].Value);
+                        double value = srcRange.Cells[Settings.FirstRow + Settings.Nodes[i] - 1, Settings.ZColumn].Value;
+                        z0.Add(value);
                     }
                 }
                 else
                 {
                     List<double> disps = new List<double>();
                     double size = Convert.ToInt32(Path.GetFileNameWithoutExtension(file)) * Settings.MetersInCell;
-                    disps.Add(size * size);
+                    disps.Add(Math.Round(size * size, 2));
                     for (int i = 0; i < Settings.Nodes.Count; i++)
                     {
                         disps.Add(Math.Abs(srcRange[Settings.FirstRow + Settings.Nodes[i] - 1, Settings.ZColumn].Value - z0[i]));
@@ -62,7 +63,7 @@ namespace MatrixMaker
             resFile.WriteLine(string.Join(";", Settings.Distances));
             foreach (var str in result)
             {
-                resFile.WriteLine(string.Join(";", str));
+                resFile.WriteLine(string.Join(";", str.Select(item => Math.Round(item, 3))));
             }
             resFile.Close();
         }
